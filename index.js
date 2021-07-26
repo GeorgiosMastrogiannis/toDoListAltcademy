@@ -1,6 +1,17 @@
 //105
 
 $(document).ready(function(){
+
+    var filter = "all tasks"
+    console.log(filter)
+
+    $("#filter").change(function(){
+        filter = $(this).children("option:selected").val();
+        //alert("You have selected - " + filter);
+        console.log(filter)
+        getAndDisplayAllTasks();
+    });
+
     var getAndDisplayAllTasks = function () {
       $.ajax({
         type: 'GET',
@@ -9,7 +20,17 @@ $(document).ready(function(){
         success: function (response, textStatus) {
             $('#todo-list').empty();
             response.tasks.forEach(function (task) {
-            $('#todo-list').append('<div class="row"><p class="col-xs-8">' + task.content + '</p><button class="delete" data-id="' + task.id + '">Delete</button><input type="checkbox" class="mark-complete" data-id="' + task.id + '"' + (task.completed ? 'checked' : '') + '>');
+            if (filter === "all tasks") {
+                $('#todo-list').append('<div class="row"><p class="col-xs-8">' + task.content + '</p><button class="delete" data-id="' + task.id + '">Delete</button><input type="checkbox" class="mark-complete" data-id="' + task.id + '"' + (task.completed ? 'checked' : '') + '>');
+            } else if (filter === "completed tasks") {
+                if (task.completed === true) {
+                    $('#todo-list').append('<div class="row"><p class="col-xs-8">' + task.content + '</p><button class="delete" data-id="' + task.id + '">Delete</button><input type="checkbox" class="mark-complete" data-id="' + task.id + '"' + (task.completed ? 'checked' : '') + '>');
+                }
+            } else if (filter === "active tasks") {
+                if (task.completed === false) {
+                    $('#todo-list').append('<div class="row"><p class="col-xs-8">' + task.content + '</p><button class="delete" data-id="' + task.id + '">Delete</button><input type="checkbox" class="mark-complete" data-id="' + task.id + '"' + (task.completed ? 'checked' : '') + '>');
+                }
+            }
           })
         },
         error: function (request, textStatus, errorMessage) {
@@ -17,7 +38,7 @@ $(document).ready(function(){
         }
       });
     }
-    
+
     var createTask = function () {
       $.ajax({
         type: 'POST',
